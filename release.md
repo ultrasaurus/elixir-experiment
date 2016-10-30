@@ -38,4 +38,19 @@ docker-machine create --driver google \
           elixir-experiment
 ```
 
-When we run this command, we'll have an environment set up for our docker containers to run. In order for us to operate in the docker container, we'll need to set up some environment variables to manipulate the docker environment. 
+When we run this command, we'll have an environment set up for our docker containers to run. In order for us to operate in the docker container, we'll need to set up some environment variables to manipulate the docker environment. Luckily, docker-machine makes this easy as well.
+
+In our terminal, let's execute the following:
+
+```bash
+eval $(docker-machine env elixir-experiment)
+```
+
+This command adds a few environment variables to our shell, which tells our docker command-line tool which docker server to communicate. Try typing the following in our terminal:
+
+```bash
+docker ps
+```
+
+If everything works, this will list an empty list of docker machines. 
+
