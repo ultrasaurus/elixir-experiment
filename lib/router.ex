@@ -19,4 +19,10 @@ defmodule Thing.Router do
     |> send_resp(200, "Hello World!")
     |> halt
   end
+
+  match _ do
+    conn
+    |> send_resp(404, "whatever not found.")
+    |> halt
+  end
 end
