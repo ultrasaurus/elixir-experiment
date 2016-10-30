@@ -1,7 +1,7 @@
-<<<<<<< HEAD
 # elixir-experiment
 experimental with elixir and mix
-=======
+
+
 # Thing
 
 **TODO: Add description**
@@ -26,4 +26,3 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     end
     ```
 
->>>>>>> ed78724... mix new thing
