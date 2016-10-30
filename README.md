@@ -59,6 +59,8 @@ ExTwitter.search("elixir-lang", [count: 5]) |>
    IO.puts
 ```
 
-
+```
+ExTwitter.followers("aneyzb", count: 10).items |> Enum.map(fn(person) -> person.location end)
+```
 
 

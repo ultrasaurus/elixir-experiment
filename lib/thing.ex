@@ -9,6 +9,11 @@ defmodule Thing do
     "Hello, " <> name
   end
 
+  def follower_count(name, count \\ 10) do
+    ExTwitter.followers(name, count: count).items
+      |> Enum.map(fn(person) -> person.location end)
+  end
+
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
