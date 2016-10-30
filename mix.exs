@@ -14,7 +14,7 @@ defmodule Thing.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :cowboy, :plug],
+    [applications: [:logger, :cowboy, :plug, :extwitter],
      mod: {Thing, []}]
   end
 
@@ -28,7 +28,13 @@ defmodule Thing.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [cowboy: "~> 1.0",
-    plug: "~> 1.0"]
+    [{:cowboy, "~> 1.0"},
+    {:plug, "~> 1.0"},
+    {:oauth, github: "tim/erlang-oauth"},
+    {:extwitter, "~> 0.7.2"}]
   end
 end
+
+
+
+
