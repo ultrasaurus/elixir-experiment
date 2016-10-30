@@ -16,7 +16,7 @@ defmodule Thing.Router do
 
   get "/" do
     conn
-    |> send_resp(200, "Hello World!")
+    |> send_resp(200, Thing.hello)
     |> halt
   end
 

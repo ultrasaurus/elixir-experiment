@@ -38,3 +38,5 @@ Then add with parameter:
 TO DO:  explain modifying app with cowboy / plug
 http://codouken.com/articles/basic-http-server-with-elixir
 
+call our own Thing.hello from `get "/" do`
+

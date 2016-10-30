@@ -1,6 +1,14 @@
 defmodule Thing do
   use Application
 
+  def hello do
+    "Hello"
+  end
+
+  def hello(name) do
+    "Hello, " <> name
+  end
+
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
