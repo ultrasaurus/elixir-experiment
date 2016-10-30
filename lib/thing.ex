@@ -9,9 +9,23 @@ defmodule Thing do
     "Hello, " <> name
   end
 
+  def increment(nil), do: 1
+  def increment(value) do
+    value + 1
+  end
+
   def follower_count(name, count \\ 10) do
     ExTwitter.followers(name, count: count).items
       |> Enum.map(fn(person) -> person.location end)
+  end
+
+  def follower_cities(name, count \\ 1) do
+    ExTwitter.followers(name, count: count).items
+      |> Enum.map(fn(person) -> person.location end)
+      |> Enum.reduce(%{}, fn(loc, acc) ->
+            Map.put(acc, loc, Thing.increment(acc[loc]))
+            end
+      )
   end
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
