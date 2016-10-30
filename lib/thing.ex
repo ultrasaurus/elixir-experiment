@@ -1,0 +1,2 @@
+defmodule Thing do
+end
