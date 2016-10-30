@@ -20,6 +20,12 @@ defmodule Thing.Router do
     |> halt
   end
 
+  get "/:name" do
+    conn
+    |> send_resp(200, Thing.hello("#{name}"))
+    |> halt
+  end
+
   match _ do
     conn
     |> send_resp(404, "whatever not found.")

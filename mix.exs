@@ -31,7 +31,8 @@ defmodule Thing.Mixfile do
     [{:cowboy, "~> 1.0"},
     {:plug, "~> 1.0"},
     {:oauth, github: "tim/erlang-oauth"},
-    {:extwitter, "~> 0.7.2"}]
+    {:extwitter, "~> 0.7.2"},
+    {:exrm, "~> 1.0"}]
   end
 end
 

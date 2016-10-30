@@ -3,4 +3,6 @@
 /deps
 erl_crash.dump
 *.ez
-/config/secret*
+/config/secret*rel
+secret.*
+rel
