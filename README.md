@@ -1,28 +1,40 @@
-# elixir-experiment
-experimental with elixir and mix
-
-
 # Thing
 
 **TODO: Add description**
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+git clone ... thing
+cd thing
+mix deps.get
 
-  1. Add `thing` to your list of dependencies in `mix.exs`:
 
-    ```elixir
-    def deps do
-      [{:thing, "~> 0.1.0"}]
-    end
-    ```
+## Steps to make this
 
-  2. Ensure `thing` is started before your application:
+mix new thing --sup
 
-    ```elixir
-    def application do
-      [applications: [:thing]]
-    end
-    ```
+add functons:
+
+```
+  def hello do
+      "Hello"
+  end
+```
+
+then run with  `iex -S mix`
+
+```
+Thing.hello
+```
+
+Then add with parameter:
+
+```
+ def hello(name) do
+    "Hello, " <> name
+  end
+```
+
+TO DO:  explain modifying app with cowboy / plug
+http://codouken.com/articles/basic-http-server-with-elixir
 
