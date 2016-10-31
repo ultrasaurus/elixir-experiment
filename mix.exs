@@ -14,7 +14,7 @@ defmodule Thing.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :cowboy, :plug, :extwitter],
+    [applications: [:logger, :cowboy, :plug, :extwitter, :oauth],
      mod: {Thing, []}]
   end
 
