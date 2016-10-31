@@ -54,3 +54,6 @@ docker ps
 
 If everything works, this will list an empty list of docker machines. 
 
+Once this is set up, we're ready to create our docker instance build system.
+
+## Creating a reproducible deployment
