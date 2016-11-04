@@ -6,7 +6,7 @@ defmodule Thing do
   end
 
   def hello(name) do
-    "Hello, " <> name
+    "Hello, " <> name <> " new version"
   end
 
   def increment(nil), do: 1
@@ -42,6 +42,7 @@ defmodule Thing do
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Thing.Supervisor]
+    :ets.new(:delivery_lookup, [:set, :named_table, :public])
     Supervisor.start_link(children, opts)
   end
 end

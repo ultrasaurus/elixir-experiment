@@ -58,3 +58,4 @@ Once this is set up, we're ready to create our docker instance build system.
 
 ## Creating a reproducible deployment
 
+Once nice feature of using Docker is it's ability to create reproducible environments.

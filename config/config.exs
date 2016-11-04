@@ -31,6 +31,10 @@ use Mix.Config
 
 import_config "secret.twitter.exs"
 
+config :remix,
+  escript: true,
+  silent: true
+
 #config :extwitter, :oauth, [
 #   consumer_key: "",
 #   consumer_secret: "",
