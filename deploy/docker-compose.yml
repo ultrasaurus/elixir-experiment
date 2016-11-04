@@ -1,0 +1,33 @@
+version: '2'
+services:
+  proxy:
+    build: ./nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    links:
+      - service
+
+  service:
+    restart: always
+    build: 
+      context: ..
+      dockerfile: ./deploy/service/Dockerfile
+      args:
+        APP_NAME: 'thing'
+        APP_VERSION: "${APP_VERSION}"
+    environment:
+      - VIRTUAL_HOST=service1
+
+  service_a:
+    extends:
+      service: service
+    environment:
+      - PORT=4000
+
+  service_b:
+    extends:
+      service: service
+    environment:
+      - PORT=4001
