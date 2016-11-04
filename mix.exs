@@ -14,12 +14,19 @@ defmodule Thing.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [
+    [applications: applications(Mix.env),
+     mod: {Thing, []}]
+  end
+
+  defp applications(:dev) do
+    applications(:all) ++ [:remix]
+  end
+
+  defp applications(_) do
+   [
       :logger, :cowboy, :plug, :extwitter, 
       :oauth, 
-      # :remix
-      ],
-     mod: {Thing, []}]
+    ]
   end
 
   # Dependencies can be Hex packages:
@@ -39,7 +46,7 @@ defmodule Thing.Mixfile do
     {:extwitter, "~> 0.7.2"},
     {:exrm, "~> 1.0"},
     {:mix_test_watch, "~> 0.2.6", only: [:dev, :test]},
-    # {:remix, "~> 0.0.2", only: :dev}
+    {:remix, "~> 0.0.2", only: [:dev]}
   ]
   end
 end

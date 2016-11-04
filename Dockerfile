@@ -17,7 +17,6 @@ WORKDIR /build
 RUN mix do deps.get, deps.compile && \
     mix do compile, release    
 
-WORKDIR /build
 RUN mkdir -p /$APP_NAME && \
     mkdir -p /$APP_NAME/releases/$APP_VERSION
 
@@ -26,9 +25,10 @@ RUN mv rel/$APP_NAME/bin /$APP_NAME/bin && \
     mv rel/$APP_NAME/releases/start_erl.data /$APP_NAME/releases/start_erl.data &&\
     mv rel/$APP_NAME/releases/$APP_VERSION /$APP_NAME/releases
 
+RUN ln -s /$APP_NAME/bin/$APP_NAME bin/start
+
 EXPOSE $PORT
 
 WORKDIR /$APP_NAME
-RUN ln -s /$APP_NAME/bin/$APP_NAME bin/start
 
 CMD trap exit TERM; bin/start foreground & wait
