@@ -302,4 +302,16 @@ EXPOSE $PORT
 CMD trap exit TERM; bin/start foreground & wait
 ```
 
-Perfect. Let's start up our docker instance.
+Perfect. Let's start up our docker instance. We'll need to map a port between our host machine and the docker instance. This way when we make a request to the docker server at a specific port, the docker server knows which docker instance to send the request. We can do this by running the `docker run` command with the `-p` flag (or the `-P` to open _all_ ports -- not recommended).
+
+Let's start up our application with the port mapped on port 4000:
+
+```bash
+docker run --rm -it -p 4000:4000 auser/elixir
+```
+
+This runs our docker instance in interactive mode. We can run our docker instance in non-interactive mode (background) using the `-d` flag:
+
+```bash
+docker run -d -p 4000:4000 auser/elixir
+```
