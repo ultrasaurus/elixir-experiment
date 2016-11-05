@@ -20,12 +20,13 @@ RUN mix do deps.get, deps.compile && \
 RUN mkdir -p /$APP_NAME && \
     mkdir -p /$APP_NAME/releases/$APP_VERSION
 
+WORKDIR /build
 RUN mv rel/$APP_NAME/bin /$APP_NAME/bin && \
     mv rel/$APP_NAME/lib /$APP_NAME/lib && \
     mv rel/$APP_NAME/releases/start_erl.data /$APP_NAME/releases/start_erl.data &&\
     mv rel/$APP_NAME/releases/$APP_VERSION /$APP_NAME/releases
 
-RUN ln -s /$APP_NAME/bin/$APP_NAME bin/start
+RUN ln -s /$APP_NAME/bin/$APP_NAME /$APP_NAME/bin/start
 
 EXPOSE $PORT
 

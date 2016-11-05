@@ -251,4 +251,55 @@ Now we'll have a working application ready to boot by calling the `/$APP_NAME/bi
 
 ### 4. Launching our app at boot
 
-Finally, let's start up our application when the instance is built 
+Finally, let's start up our application when the instance is built. In order to do this, we'll make the root directory of our app the working directory and call the `bin/start` script.
+
+```Dockerfile
+FROM elixir:1.3.4
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+ARG APP_NAME
+ARG APP_VERSION
+ENV PORT 4000
+ENV MIX_ENV prod
+
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
+COPY . /build
+
+WORKDIR /build
+RUN mix do deps.get, deps.compile && \
+    mix do compile, release    
+
+## Create the start script
+WORKDIR /build
+RUN mkdir -p /$APP_NAME && \
+    mkdir -p /$APP_NAME/releases/$APP_VERSION
+
+RUN mv rel/$APP_NAME/bin /$APP_NAME/bin && \
+    mv rel/$APP_NAME/lib /$APP_NAME/lib && \
+    mv rel/$APP_NAME/releases/start_erl.data /$APP_NAME/releases/start_erl.data &&\
+    mv rel/$APP_NAME/releases/$APP_VERSION /$APP_NAME/releases
+
+RUN ln -s /$APP_NAME/bin/$APP_NAME bin/start
+
+WORKDIR /$APP_NAME
+
+CMD trap exit TERM; bin/start foreground & wait
+```
+
+### Launching our app
+
+We're _almost_ ready to deploy our application into a real environment. The last thing we need to take care of is exposing a port for our application to be able to contact it. By default, docker won't open any ports on a container. This is purposeful, but kind of inconvenient. Luckily, opening a port is _easy as pie_ with Docker.
+
+Let's add the `EXPOSE` keyword above the `CMD` with the PORT we want to expose:
+
+```Dockerfile
+## ...
+WORKDIR /$APP_NAME
+EXPOSE $PORT
+CMD trap exit TERM; bin/start foreground & wait
+```
+
+Perfect. Let's start up our docker instance.

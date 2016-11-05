@@ -1,6 +1,7 @@
 defmodule Thing.Router do
   use Plug.Router
   require Logger
+  require EEx
 
   plug Plug.Logger
   plug Plug.Parsers,

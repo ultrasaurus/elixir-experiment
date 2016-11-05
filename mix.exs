@@ -3,7 +3,7 @@ defmodule Thing.Mixfile do
 
   def project do
     [app: :thing,
-     version: "0.1.1",
+     version: "0.1.0",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -25,7 +25,7 @@ defmodule Thing.Mixfile do
   defp applications(_) do
    [
       :logger, :cowboy, :plug, :extwitter, 
-      :oauth, 
+      :oauth, :eex 
     ]
   end
 
@@ -40,7 +40,6 @@ defmodule Thing.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [{:cowboy, "~> 1.0"},
-    {:json, "~> 1.0"},
     {:plug, "~> 1.0"},
     {:oauth, github: "tim/erlang-oauth"},
     {:extwitter, "~> 0.7.2"},
