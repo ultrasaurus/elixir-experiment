@@ -45,7 +45,8 @@ defmodule Thing.Mixfile do
     {:extwitter, "~> 0.7.2"},
     {:exrm, "~> 1.0"},
     {:mix_test_watch, "~> 0.2.6", only: [:dev, :test]},
-    {:remix, "~> 0.0.2", only: [:dev]}
+    {:remix, "~> 0.0.2", only: [:dev]},
+    {:exrm, "~> 1.0"}
   ]
   end
 end

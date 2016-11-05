@@ -1,12 +1,18 @@
 ## Release
 
-We're releasing to Google Cloud in this class using [docker-machine](https://docs.docker.com/machine/).
+We're releasing to AWS in this class using [docker-machine](https://docs.docker.com/machine/).
 
-First, install the docker-machine tool from the [https://docs.docker.com/machine/](https://docs.docker.com/machine/) page.
+First, install the docker-machine tool using Homebrew - 
+
+run `brew install docker-machine`
+
+If that is successful 
+
+run `brew install docker`
 
 Once we have this dependency, we will need to build a docker image to run our application from within. We'll use some default docker functions to do this.
 
-### Build a docker machine on google cloud
+### Build a docker machine on aws
 
 In order to build into a docker image, we'll need a machine running docker. Docker-machine makes this pretty easy. 
 
@@ -14,29 +20,79 @@ In order to build into a docker image, we'll need a machine running docker. Dock
 >
 > Docker-machine makes building docker environments in multiple platforms simple. In this case, we'll be building against the google cloud engine, but we can just as easily build our environment with aws, virtualbox, or any other cloud provider supported by docker-machine. 
 
-Let's create a google cloud environment with docker-machine where our docker image will live. In order to do this, we'll need to sign up for GCE at the google cloud platform page at [https://console.cloud.google.com/home/dashboard](https://console.cloud.google.com/home/dashboard)
+> Let's setup an aws account. Visit [aws](https://www.aws.com/)
+If you don't have an account. Sign up for one. 
 
-![](./assets/create-project-1)
+>Click on the Services tab at the top
+![](./assets/aws_panel.png)
 
-Create a project we'll work within. In our example, we'll work in a project called `elixir-bridge`, but we can name is anything we want. Next, we'll need to enable the google compute apis in this project. 
+Under `security & identity` select IAM. 
 
-Find the Library tab and search for the compute api
+On the left hand panel - select Users and click on create a new user.
 
-![](./assets/enable-cloud-api-1)
+![](./assets/users_panel.png)
+![](./assets/create_new_user.png)
 
-Find the compute api and navigate to the page. Here, find the `Enable` button and enable the API for this project.
+Then click on users on the left hand side of the panel - and find your user.
+Click on your user. You will see a screen similar to the following
+
+![](./assets/create_new_access_key.png)
+
+Click on create new Access key - this will create new keys for you. You will have an option to download them
+
+Download and open the file - the first string in the file is your user, the second is your access Key, and the third is your secret key
+
+`user-name access-key secret-access-key`
+
+On the command line type `aws configure`
+
+It will then ask you to input your user-id, access-key and secret-key
+
+After you have entered those just hit enter and ignore the last to requests for other information, they are not necessary.
+
+Now run the following from the command line 
+
+```
+docker-machine create --driver amazonec2 --amazonec2-region us-west-2 --amazonec2-instance-type "t2.micro" elixir-experiment
+```
+
+This should provision your docker machine.
+
+
+Next run the following command
+
+`docker-machine create --driver amazonec2 --amazonec2-region us-west-2 --amazonec2-instance-type "t2.micro" elixir-experiment`
+
+
+Then type
+
+`docker-machine ssh elixir-experiment`
+
+You should see something like the follwoing
+
+```elixir
+Welcome to Ubuntu 15.10 (GNU/Linux 4.2.0-18-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+
+  Get cloud support with Ubuntu Advantage Cloud Guest:
+    http://www.ubuntu.com/business/services/cloud
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '16.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+
+*** System restart required ***
+```
+
 
 ### Building a docker environment
 
-With the GCE (google cloud engine) side setup, let's create the google container environment. We'll use the docker-machine command to create an app environment. 
-
-```bash
-docker-machine create --driver google \
-          --google-project [YOUR_PROJECT_ID] \
-          --google-zone us-central1-a \
-          --google-machine-type f1-micro \
-          elixir-experiment
-```
+With the AWS side setup, let's create the google container environment. We'll use the docker-machine command to create an app environment. 
 
 When we run this command, we'll have an environment set up for our docker containers to run. In order for us to operate in the docker container, we'll need to set up some environment variables to manipulate the docker environment. Luckily, docker-machine makes this easy as well.
 
@@ -49,10 +105,50 @@ eval $(docker-machine env elixir-experiment)
 This command adds a few environment variables to our shell, which tells our docker command-line tool which docker server to communicate. Try typing the following in our terminal:
 
 ```bash
-docker ps
+docker info
 ```
 
-If everything works, this will list an empty list of docker machines. 
+If everything works, you should see something similar to this 
+
+```
+Containers: 0
+ Running: 0
+ Paused: 0
+ Stopped: 0
+Images: 0
+Server Version: 1.12.3
+Storage Driver: aufs
+ Root Dir: /var/lib/docker/aufs
+ Backing Filesystem: extfs
+ Dirs: 0
+ Dirperm1 Supported: true
+Logging Driver: json-file
+Cgroup Driver: cgroupfs
+Plugins:
+ Volume: local
+ Network: bridge host null overlay
+Swarm: inactive
+Runtimes: runc
+Default Runtime: runc
+Security Options: apparmor seccomp
+Kernel Version: 4.2.0-18-generic
+Operating System: Ubuntu 15.10
+OSType: linux
+Architecture: x86_64
+CPUs: 1
+Total Memory: 991.1 MiB
+Name: elixir-experiment
+ID: JN2P:HKWL:ILKF:FN37:NFZZ:TP3D:VMZ5:IXVI:AV5Q:6CUZ:MVZG:NXEP
+Docker Root Dir: /var/lib/docker
+Debug Mode (client): false
+Debug Mode (server): false
+Registry: https://index.docker.io/v1/
+WARNING: No swap limit support
+Labels:
+ provider=amazonec2
+Insecure Registries:
+ 127.0.0.0/8
+ ```
 
 Once this is set up, we're ready to create our docker instance build system.
 
@@ -89,7 +185,7 @@ touch Dockerfile
 
 Now, let's build up our `Dockerfile`. We'll base our docker image off the `elixir` base image provided by [hub.docker.io](https://hub.docker.io).
 
-> It's possible to base our image off a different base image, even a bare-minimum one. The elixir base image is a pretty good one to star out with as we won't need to install any of the elixir dependencies (except for our hex packager). 
+> It's possible to base our image off a different base image, even a bare-minimum one. The elixir base image is a pretty good one to start out with as we won't need to install any of the elixir dependencies (except for our hex packager). 
 
 To base our docker image off the elixir base image, we can add the `FROM` command at the top of the `Dockerfile`:
 
@@ -112,11 +208,42 @@ Although this won't actually do anything yet, let's build this image to see the 
 
 When working with docker, we'll create snapshots of our running image. We can create a snapshot by using the `docker build` command in our terminal in the same directory as our `Dockerfile`.
 
-We'll want to create a reachable snapshot of this image. We can either do this by using the shasum created by the `docker build` command or, the easier, more memorable `tag` name. Let's prefer to use a tag name by passing the `-t` flag, like so:
+Before we deploy to AWS, let's create a docker image locally. We will do our work locally, and then push up to AWS when we are ready.
+
+Type the following into the terminal:
+
+`docker-machine create --driver virtualbox default`
+
+This will create a local image names `default` using virtualbox as the driver
+Let's make sure that our `$Docker_HOST` is pointing to our local machine.
+
+Type the following into the terminal
+
+`echo $DOCKER_HOST`
+
+This should reference our local machine. You should see something like the following 
+
+`tcp://192.xxxxx`
+
+Then type 
+
+`docker-machine env default`
+
+This will export our environment variables for our local machine
+
+`eval $(docker-machine env default)`
+
+This command sets the docker environment variables for the environment specified, in this case the environment variables are being set for our local machine named `default`
+ 
+ 
+
+Now We'll want to create a reachable snapshot of this image. We can either do this by using the shasum created by the `docker build` command or, the easier, more memorable `tag` name. Let's prefer to use a tag name by passing the `-t` flag, like so:
 
 ```bash
-docker build -t auser/elixir ./Dockerfile
+docker build -t test/elixir .
 ``` 
+
+This will build our local Docker image based on what we have specified in our Dockerfile
 
 If everything works, we'll see the output:
 
@@ -125,7 +252,7 @@ If everything works, we'll see the output:
 To use this image in docker, let's launch the image while running a shell which we can run commands against. We'll use the `docker run` command this time:
 
 ```bash
-docker run --rm -it auser/elixir /bin/sh
+docker run --rm -it test/elixir /bin/sh
 ```
 
 If all goes well, we'll see a command prompt connected to our running docker image.
@@ -170,8 +297,13 @@ RUN mix local.hex --force && \
 
 ## Copy our working files to the /build directory
 ## in the docker image
+Add the following to our docker file
+
 COPY . /build
+
+
 ## Compile our application
+Then add the following to our Docker File
 
 WORKDIR /build
 RUN mix do deps.get, deps.compile && \
@@ -184,6 +316,7 @@ As it stands right now, building the docker image is a static process, however w
 
 In any case, we'll want to be able to send in some dynamic arguments when building our application. Docker makes this pretty easy to do by using a combination of the `ARG` and `ENV` keywords. Let's tell Docker that we expect to pass in the `APP_NAME` and `APP_VERSION` when building our docker image.
 
+Add the following to the top our our elixir file:
 ```Dockerfile
 FROM elixir:1.3.4
 
@@ -307,11 +440,11 @@ Perfect. Let's start up our docker instance. We'll need to map a port between ou
 Let's start up our application with the port mapped on port 4000:
 
 ```bash
-docker run --rm -it -p 4000:4000 auser/elixir
+docker run --rm -it -p 4000:4000 test/elixir
 ```
 
 This runs our docker instance in interactive mode. We can run our docker instance in non-interactive mode (background) using the `-d` flag:
 
 ```bash
-docker run -d -p 4000:4000 auser/elixir
+docker run -d -p 4000:4000 test/elixir
 ```

@@ -29,7 +29,6 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-import_config "secret.twitter.exs"
 
 config :remix,
   escript: true,

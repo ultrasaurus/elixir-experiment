@@ -15,7 +15,7 @@ COPY . /build
 
 WORKDIR /build
 RUN mix do deps.get, deps.compile && \
-    mix do compile, release    
+    mix do compile, release
 
 RUN mkdir -p /$APP_NAME && \
     mkdir -p /$APP_NAME/releases/$APP_VERSION
