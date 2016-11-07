@@ -30,6 +30,7 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 import_config "secret.twitter.exs"
+import_config "yelp.exs"
 
 config :remix,
   escript: true,

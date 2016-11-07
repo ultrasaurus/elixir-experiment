@@ -37,6 +37,7 @@ defmodule Thing do
     children = [
       # Starts a worker by calling: Thing.Worker.start_link(arg1, arg2, arg3)
       worker(Thing.Router, []),
+      worker(YelpServer)
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

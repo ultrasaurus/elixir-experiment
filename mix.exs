@@ -25,7 +25,7 @@ defmodule Thing.Mixfile do
   defp applications(_) do
    [
       :logger, :cowboy, :plug, :extwitter, 
-      :oauth, :eex 
+      :oauth, :eex, :hackney
     ]
   end
 
@@ -42,8 +42,10 @@ defmodule Thing.Mixfile do
     [{:cowboy, "~> 1.0"},
     {:plug, "~> 1.0"},
     {:oauth, github: "tim/erlang-oauth"},
+    {:oauther, "~> 1.1.0"},
     {:extwitter, "~> 0.7.2"},
     {:exrm, "~> 1.0"},
+    {:hackney, "~> 1.6.3"},
     {:mix_test_watch, "~> 0.2.6", only: [:dev, :test]},
     {:remix, "~> 0.0.2", only: [:dev]}
   ]

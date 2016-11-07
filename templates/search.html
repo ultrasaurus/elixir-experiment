@@ -1,0 +1,48 @@
+<!doctype>
+<html>
+  <head>
+    <title>Search</title>
+  </head>
+  <body>
+
+    <h1>Search for food</h1>
+    <form action="#" id='searchForm'>
+      <label for="search">Search</label>
+      <input placeholder="Search"
+        name="query"
+        value="pizza"
+        type="search" />
+
+      <label for="location">City</label>
+      <input 
+        type="text" name="location"
+        value="San Francisco" 
+        placeholder="Address"
+        id="location" />
+      
+      <input type="submit" value="Search" />
+    </form>
+
+
+    <script type="text/javascript">
+      function search(evt) {
+        evt.preventDefault();
+        const form = new FormData(this);
+        fetch('/search', {
+          method: 'POST', 
+          body: form
+        })
+        .then(res => res.json())
+        .then(json => {
+          console.log('res ->', json);
+        })
+        .catch(err => {
+          console.log('err ->', err);
+        })
+      }
+      document.querySelector('#searchForm')
+        .addEventListener('submit', search);
+    </script>
+
+  </body>
+</html>
