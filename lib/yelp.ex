@@ -6,7 +6,7 @@ defmodule Yelp do
   require HTTPoison
 
   def start_link(default) do
-    GenServer.start_link(__MODULE__, default)
+    GenServer.start_link(__MODULE__, default, name: __MODULE__)
   end
 
   def lookup(pid, query, location) do
@@ -28,11 +28,10 @@ defmodule Yelp do
   def handle_call({:lookup, term, location}, _from_pid, state) do
     # {:yelp, config} = state
     query = [{"term", term}, {"location", location}]
-    url = route("/v2/search")
 
     case get_request("/v2/search", query) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:reply, process_body(body), state}
+        {:reply, {:ok, process_body(body)}, state}
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:reply, %{error: "not_found"}, state}
       {:error, %HTTPoison.Error{reason: reason}} ->

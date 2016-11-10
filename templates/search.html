@@ -22,20 +22,35 @@
       
       <input type="submit" value="Search" />
     </form>
+    <div id="list"></div>
 
 
     <script type="text/javascript">
+      const container = document.querySelector('#list')
+
+      function updateList(items) {
+        let content = '<div class="ui items">'
+        const itemList = items.map(item => {
+          return '<div class="item">' + 
+            '<img src="' + item.image_url + '" />' +
+            '<h2>' + item.name + '</h2>' +
+            '</div>'
+        })
+        content += itemList
+        content += '</div>'
+        container.innerHTML = content;
+      }
       function search(evt) {
         evt.preventDefault();
+
         const form = new FormData(this);
         fetch('/search', {
           method: 'POST', 
           body: form
         })
         .then(res => res.json())
-        .then(json => {
-          console.log('res ->', json);
-        })
+        .then(json => json.businesses)
+        .then(updateList)
         .catch(err => {
           console.log('err ->', err);
         })

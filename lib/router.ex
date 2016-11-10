@@ -56,9 +56,14 @@ defmodule Thing.Router do
   end
 
   post "/search" do
+    {:ok, body} = Yelp.lookup(Yelp, conn.params["query"], conn.params["location"])
+    payload = body 
+    |> Enum.into(%{}) 
+    |> Poison.Encoder.encode([])  
+
     conn
       |> put_resp_header("content-type", "application/json")
-      |> send_resp(200, "ok")
+      |> send_resp(200, payload)
       |> halt
   end
 
