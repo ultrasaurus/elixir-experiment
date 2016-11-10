@@ -1,7 +1,9 @@
-defmodule YelpServer do
+defmodule Yelp do
   use GenServer
+  # use Mix.Config
   require OAuther
   require Poison
+  require HTTPoison
 
   def start_link(default) do
     GenServer.start_link(__MODULE__, default)
@@ -15,48 +17,51 @@ defmodule YelpServer do
     GenServer.call(pid, {:config})
   end
 
-  def init() do
-    root_url = Application.get_env(:yelp, :root_url)
-    creds = OAuther.credentials(Application.get_env(:yelp, :oauth))
-    {:ok, %{root_url: root_url, creds: creds}}
+  def init(config) do
+    {:ok, config}
   end
 
   def handle_call({:config}, _from, state) do
-    {:reply, state}
+    {:reply, state, state}
   end
 
-  def handle_call({:lookup, query, location}, _from_pid, state) do
-    {:ok, config} = state
-    IO.puts(config)
-    # {:root_url, root_url} = config
-    # {:creds, creds} = config
+  def handle_call({:lookup, term, location}, _from_pid, state) do
+    # {:yelp, config} = state
+    query = [{"term", term}, {"location", location}]
+    url = route("/v2/search")
 
-    # query = [{"term", query}, {"location", location}]
-
-    # url = "#{root_url}/v2/search"
-
-    # params = OAuther.sign("get", url, query, creds)
-    # {header, req_params} = OAuther.header(params)
-
-    # headers = [header]
-    # qs = :hackney_url.qs(req_params)
-
-    # case make_request("#{url}?#{qs}", [header], req_params) do
-    #   {:body, status_code, decoded} ->
-    #     {:reply, decoded, state}
-    #   _ ->
-    #     {:reply, state}
-    # end
-  end
-
-  defp make_request(url, headers, req_params) do
-    case :hackney.get(url, headers, {:form, req_params}) do
-      {:ok, status_code, _resp_headers, client_ref} ->
-        {:ok, body} = :hackney.body(client_ref)
-        {:ok, decoded} = Poison.decode(body)
-        {:resp, status_code, decoded}
-      _ -> {:error}
+    case get_request("/v2/search", query) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        {:reply, process_body(body), state}
+      {:ok, %HTTPoison.Response{status_code: 404}} ->
+        {:reply, %{error: "not_found"}, state}
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:reply, %{error: reason}, state}
     end
+  end
+
+  defp process_body(body) do
+    body
+    |> Poison.decode!
+    |> Enum.map(fn({k, v}) -> {String.to_atom(k), v} end)
+  end
+
+  defp get_request(path, query) do
+    url = route(path)
+    creds = authCreds()
+    params = OAuther.sign("get", url, query, creds)
+    {header, req_params} = OAuther.header(params)
+    headers = [header] 
+    HTTPoison.get(url, headers, [params: req_params])
+  end
+
+  defp authCreds() do
+    config = Application.get_all_env(:thing)[:yelp]
+    OAuther.credentials(config)
+  end
+
+  defp route(path) do
+    "https://api.yelp.com#{path}"
   end
 
 end

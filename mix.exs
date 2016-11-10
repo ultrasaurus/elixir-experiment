@@ -25,7 +25,7 @@ defmodule Thing.Mixfile do
   defp applications(_) do
    [
       :logger, :cowboy, :plug, :extwitter, 
-      :oauth, :eex, :hackney
+      :oauth, :eex, :httpoison
     ]
   end
 
@@ -45,8 +45,9 @@ defmodule Thing.Mixfile do
     {:oauther, "~> 1.1.0"},
     {:extwitter, "~> 0.7.2"},
     {:exrm, "~> 1.0"},
-    {:hackney, "~> 1.6.3"},
+    {:httpoison, "~> 0.10.0"},
     {:mix_test_watch, "~> 0.2.6", only: [:dev, :test]},
+    {:exvcr, "~> 0.8", only: :test},
     {:remix, "~> 0.0.2", only: [:dev]}
   ]
   end

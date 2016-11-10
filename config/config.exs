@@ -30,11 +30,14 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 import_config "secret.twitter.exs"
-import_config "yelp.exs"
 
-config :remix,
-  escript: true,
-  silent: true
+if Mix.env == "dev" do
+  config :remix,
+    escript: true,
+    silent: true
+end
+
+import_config("#{Mix.env}.exs")
 
 #config :extwitter, :oauth, [
 #   consumer_key: "",

@@ -7,3 +7,5 @@ erl_crash.dump
 secret.*
 rel
 config/yelp.exs
+config/dev.exs
+config/test.exs
