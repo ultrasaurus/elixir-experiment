@@ -45,7 +45,7 @@ defmodule Yelp do
   def handle_call({:lookup, term, location}, _from_pid, {cache}) do
     cache_key = :"#{term}/#{location}"
     case :ets.lookup(cache, cache_key) do
-      [{^cache_key, val}] -> {:reply, {:ok, val}, {cache}}
+      [{^cache_key, resp}] -> {:reply, {:ok, resp}, {cache}}
       _ -> case yelp_call(term, location) do
         {:ok, resp} -> 
           :ets.insert(cache, {cache_key, resp})
@@ -71,8 +71,27 @@ defmodule Yelp do
   defp process_body(body) do
     body
     |> Poison.decode!
-    |> Enum.map(fn({k, v}) -> {String.to_atom(k), v} end)
+    |> to_atom
   end
+
+  defp to_atom(map) when is_map(map) do
+    map |> Enum.reduce(%{}, fn({k,v}, acc) ->
+      key = k |> key_to_atom
+      val = v |> to_atom
+      acc |> Map.put(key, val)
+    end)
+  end
+  defp to_atom(list) when is_list(list) do
+    list |> Enum.map(fn(x) -> to_atom(x) end)
+  end
+  defp to_atom(tuple) when is_tuple(tuple) do
+    tuple |> Tuple.to_list |> to_atom |> List.to_tuple
+  end
+  defp to_atom(v), do: v
+  defp key_to_atom(k) do
+    k |> String.to_atom
+  end
+
 
   defp get_request(path, query) do
     url = route(path)
