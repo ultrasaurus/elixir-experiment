@@ -43,14 +43,13 @@ defmodule Yelp do
   end
 
   def handle_call({:lookup, term, location}, _from_pid, {cache}) do
-    # {:cache, cache} = state
     cache_key = :"#{term}/#{location}"
     case :ets.lookup(cache, cache_key) do
-      [{^cache_key, val}] -> {:reply, val, {cache}}
+      [{^cache_key, val}] -> {:reply, {:ok, val}, {cache}}
       _ -> case yelp_call(term, location) do
         {:ok, resp} -> 
           :ets.insert(cache, {cache_key, resp})
-          {:reply, resp, {cache}}
+          {:reply, {:ok, resp}, {cache}}
         {:error, reason} -> {:error, reason, {cache}}
       end
     end
