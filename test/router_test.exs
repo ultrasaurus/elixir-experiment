@@ -48,6 +48,7 @@ defmodule RouterTest do
   end
 
   test "post stores delivery id" do
+    file_conn("evt_L0krJi484soCo-")
     [status] = :ets.match(:delivery_lookup, {:"del_L0kr80FV9O15kk", :"$1"})
     assert status == [:pickup]
   end

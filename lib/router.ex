@@ -55,8 +55,12 @@ defmodule Thing.Router do
       |> halt
   end
 
+  get "/order" do
+    order_page = EEx.eval_file("templates/order.html")
+  end
+
   post "/search" do
-    {:ok, body} = Yelp.lookup(Yelp, conn.params["query"], conn.params["location"])
+    {:ok, body} = Yelp.lookup(conn.params["query"], conn.params["location"])
     payload = body 
     |> Enum.into(%{}) 
     |> Poison.Encoder.encode([])  

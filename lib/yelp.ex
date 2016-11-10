@@ -5,37 +5,67 @@ defmodule Yelp do
   require Poison
   require HTTPoison
 
+  @table :yelp_responses
+
   def start_link(default) do
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
   end
 
-  def lookup(pid, query, location) do
-    GenServer.call(pid, {:lookup, query, location})
+  def lookup(query, location) do
+    GenServer.call(__MODULE__, {:lookup, query, location})
   end
 
-  def config(pid) do
-    GenServer.call(pid, {:config})
+  def cached_lookup(query, location) do
+    GenServer.call(__MODULE__, {:cached_lookup, query, location})
   end
 
-  def init(config) do
-    {:ok, config}
+  def config() do
+    GenServer.call(__MODULE__, {:config})
   end
 
-  def handle_call({:config}, _from, state) do
-    {:reply, state, state}
+  def init(_) do
+    # :ets.new(@table, [:set, :named_table, :public])
+    cache = :ets.new(@table, [:set, :named_table, :public])
+    {:ok, {cache}}
   end
 
-  def handle_call({:lookup, term, location}, _from_pid, state) do
-    # {:yelp, config} = state
+  def handle_call({:config}, _from, {cache}) do
+    {:reply, {cache}, {cache}}
+  end
+
+  def handle_call({:cached_lookup, query, location}, _, {cache}) do
+    cache_key = :"#{query}/#{location}"
+    case :ets.lookup(cache, cache_key) do
+      [{^cache_key, resp}] -> {:reply, {:ok, resp}, {cache}}
+      [] -> 
+        {:reply, {:error, :not_found}, {cache}}
+    end
+  end
+
+  def handle_call({:lookup, term, location}, _from_pid, {cache}) do
+    # {:cache, cache} = state
+    cache_key = :"#{term}/#{location}"
+    case :ets.lookup(cache, cache_key) do
+      [{^cache_key, val}] -> {:reply, val, {cache}}
+      _ -> case yelp_call(term, location) do
+        {:ok, resp} -> 
+          :ets.insert(cache, {cache_key, resp})
+          {:reply, resp, {cache}}
+        {:error, reason} -> {:error, reason, {cache}}
+      end
+    end
+  end
+
+  defp yelp_call(term, location) do
     query = [{"term", term}, {"location", location}]
 
     case get_request("/v2/search", query) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:reply, {:ok, process_body(body)}, state}
+        {:ok, process_body(body)}
       {:ok, %HTTPoison.Response{status_code: 404}} ->
-        {:reply, %{error: "not_found"}, state}
+        {:error, "not_found"}
       {:error, %HTTPoison.Error{reason: reason}} ->
-        {:reply, %{error: reason}, state}
+        {:error, reason}
     end
   end
 
