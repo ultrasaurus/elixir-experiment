@@ -29,8 +29,6 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-import_config "secret.twitter.exs"
-
 if Mix.env == "dev" do
   config :remix,
     escript: true,

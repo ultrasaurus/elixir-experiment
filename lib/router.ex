@@ -4,11 +4,13 @@ defmodule Thing.Router do
   require EEx
   require OAuther
 
-  # plug Plug.Logger
+  plug Plug.Logger
+  plug Plug.Static, at: "/public", from: "public"
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
     json_decoder: Poison
+
   plug :match
   plug :dispatch
 
@@ -23,16 +25,12 @@ defmodule Thing.Router do
   end
 
   get "/" do
+    homepage = EEx.eval_file("templates/home.html")
     conn
-    |> send_resp(200, Thing.hello)
+    |> put_resp_content_type("text/html")
+    |> send_resp(200, homepage)
     |> halt
   end
-
-  # get "/:name" do
-  #   conn
-  #   |> send_resp(200, Thing.hello("#{name}"))
-  #   |> halt
-  # end
 
   ## 1. Authenticate with uber
   ## 2. Make a delivery request
@@ -46,17 +44,12 @@ defmodule Thing.Router do
     |> halt
   end
 
-  get "/search" do
-    # TODO: Move
-    search_page = EEx.eval_file("templates/search.html")
-    conn
-      |> put_resp_header("content-type", "text/html")
-      |> send_resp(200, search_page)
-      |> halt
-  end
-
   get "/order" do
     order_page = EEx.eval_file("templates/order.html")
+    conn
+    |> put_resp_header("content-type", "text/html")
+    |> send_resp(200, order_page)
+    |> halt
   end
 
   post "/search" do

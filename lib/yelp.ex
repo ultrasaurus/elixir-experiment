@@ -1,6 +1,5 @@
 defmodule Yelp do
   use GenServer
-  # use Mix.Config
   require OAuther
   require Poison
   require HTTPoison
@@ -24,8 +23,7 @@ defmodule Yelp do
   end
 
   def init(_) do
-    # :ets.new(@table, [:set, :named_table, :public])
-    cache = :ets.new(@table, [:set, :named_table, :public])
+    cache = :ets.new(@table, [:set, :named_table, :protected])
     {:ok, {cache}}
   end
 
