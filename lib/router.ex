@@ -4,7 +4,10 @@ defmodule Thing.Router do
   require EEx
   require OAuther
 
-  plug Plug.Logger
+  if Mix.env == "dev" do
+    plug Plug.Logger
+  end
+
   plug Plug.Static, at: "/public", from: "public"
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
@@ -52,8 +55,21 @@ defmodule Thing.Router do
     |> halt
   end
 
+  post "/aroundme" do
+    geo = conn.params["geo"] |> Poison.Parser.parse!
+
+    {:ok, body} = Yelp.lookup({:geo, Map.merge(geo, %{"term" => "food"})})
+    payload = body |> Enum.into(%{}) |> Poison.Encoder.encode([])
+
+    conn
+      |> put_resp_content_type("application/json")
+      |> send_resp(200, payload)
+      |> halt
+  end
+
   post "/search" do
-    {:ok, body} = Yelp.lookup(conn.params["query"], conn.params["location"])
+    lookup = {:term, conn.params["query"], conn.params["location"]}
+    {:ok, body} = Yelp.lookup(lookup)
     payload = body 
     |> Enum.into(%{}) 
     |> Poison.Encoder.encode([])  

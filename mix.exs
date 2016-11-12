@@ -2,8 +2,12 @@ defmodule Thing.Mixfile do
   use Mix.Project
 
   def project do
+    {result, _exit_code} = System.cmd("git", ["rev-parse", "HEAD"])
+
+    git_sha = String.slice(result, 0, 7)
+
     [app: :thing,
-     version: "0.1.0",
+     version: "0.1.0-#{git_sha}",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
